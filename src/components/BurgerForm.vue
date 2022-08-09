@@ -1,8 +1,8 @@
 <template>
     <div>
-        <p>Comp</p>
+        <Message :msg="msg" v-show="msg" />
         <div>
-            <form id="burger-form">
+            <form id="burger-form" @submit="createBurger">
                 <div class="input-container">
                     <label for="nome">Nome do cliente</label>
                     <input type="text" name="nome" id="nome" v-model="nome" placeholder="Digite o seu nome">
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import Message from './Message.vue';
 
 export default {
     name: "BurgerForm",
@@ -59,23 +60,52 @@ export default {
             pao: null,
             carnes: null,
             opcionais: [],
-            status: 'solicitado',
             msg: null,
-        }
+        };
     },
     methods: {
         async getIngredientes() {
             const req = await fetch(`${process.env.VUE_APP_API_BASE_URL}ingredientes`);
             const data = await req.json();
-
             this.paes = data.paes;
             this.carnes = data.carnes;
             this.opcionaisData = data.opcionais;
+        },
+        async createBurger(e) {
+            e.preventDefault();
+            const data = {
+                nome: this.nome,
+                carne: this.carne,
+                pao: this.pao,
+                opcionais: Array.from(this.opcionais),
+                status: "solicitado"
+            };
+
+            const dataJSON = JSON.stringify(data);
+
+            const req = await fetch(`${process.env.VUE_APP_API_BASE_URL}burgers`, {
+                method: "post",
+                headers: { "Content-type": "application/json" },
+                body: dataJSON
+            });
+
+            const res = await req.json();
+
+            this.msg = `Pedido Nº ${res.id} realizado com sucesso!`;
+
+            setTimeout(() => this.msg = "", 10000);
+
+            //console.log(res);
+            this.nome = "";
+            this.carne = "";
+            this.pao = "";
+            this.opcionais = "";
         }
     },
     mounted() {
         this.getIngredientes();
-    }
+    },
+    components: { Message }
 }
 </script>
 
@@ -102,7 +132,7 @@ label {
 input,
 select {
     padding: 5px 10px;
-    width: 300px;
+    width: 100%;
 }
 
 #opcionais-container {
