@@ -108,7 +108,7 @@
       "opcionais": [
         "Bacon"
       ],
-      "status": "solicitado",
+      "status": "Em produção",
       "id": 5
     },
     {
@@ -123,7 +123,7 @@
         "Tomate",
         "Cheddar"
       ],
-      "status": "solicitado",
+      "status": "Finalizado",
       "id": 6
     }
   ]
